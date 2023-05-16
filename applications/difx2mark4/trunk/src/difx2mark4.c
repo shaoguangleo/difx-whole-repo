@@ -465,6 +465,7 @@ int newScan(DifxInput *D, struct CommandLineOptions *opts, char *node, int scanI
         fprintf (stderr, "Could not create type 3 files\n");
         return -1;
         }
+    fprintf (stdout, "    Completed root file %s\n", rootname);
     return(nextScanId);
 }
 

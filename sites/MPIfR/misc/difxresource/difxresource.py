@@ -40,6 +40,7 @@ rate["MARK6MODULE"]=4000.0
 rate["FILE"]=16000.0
 rate["FAKE"]=16000.0 # needed for source=fake test-correlation v2d's
 
+minNodes = 6
 maxNodes = 60
 
 description = "A program to estimate the number of openmpi processes required to process a DiFX job at the fastest possible speed.\n"
@@ -117,7 +118,8 @@ for ds in difx.metainfo.datastreams:
     if ds.datasource == "FILE":
       if len(difx.metainfo.data[dsIdx].media) == 0:
           # empty entry, happens e.g. when multi-datastream station lacks a recording on one of the streams
-          rateDiv = 1
+          dsIdx += 1
+          continue
       elif difx.metainfo.data[dsIdx].media[0].startswith("/"):
           source = difx.metainfo.data[dsIdx].media[0].split("/")[1]
           if pFuseMark5.match(source):
@@ -147,6 +149,9 @@ for ds in difx.metainfo.datastreams:
 
 #print maxSpeedup, totalDataRate, totalDataRate * maxSpeedup / args.rate
 numProcs = int(ceil(totalDataRate * maxSpeedup / args.rate))
+
+if numProcs < minNodes*maxThreads:
+  numProcs = minNodes*maxThreads
 
 if numProcs > maxNodes*maxThreads:
   numProcs = maxNodes*maxThreads
